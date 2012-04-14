@@ -1,0 +1,9 @@
+Haven't you always wanted to get your weather data from Environment Canada,
+instead of some of the other options out there?  Well, now you can!
+
+To build:
+
+mvn package
+
+Note that this is just a library, not an application.
+

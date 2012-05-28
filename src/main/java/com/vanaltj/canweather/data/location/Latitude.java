@@ -13,10 +13,12 @@ public class Latitude extends CoordinateComponent {
             break;
         case SOUTH:
             break;
+        case NOWHERE:
+            break;
         case EAST:
         case WEST:
         default:
-            throw new IllegalStateException("Latitude may only be North/South.");
+            throw new IllegalArgumentException("Latitude may only be North/South.");
         }
     }
 

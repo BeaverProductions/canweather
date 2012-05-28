@@ -16,41 +16,44 @@ public class DateTime {
     @Attribute(name="zone")
     private String zone;
 
-    @Attribute(name="UTCOffset")
-    private int utcOffset;
-
-    @Element(name="year")
+    @Element(name="year", required=false)
     private int year;
 
-    @Element(name="month")
+    @Element(name="month", required=false)
     private int month;
 
-    @Element(name="day")
+    @Element(name="day", required=false)
     private int day;
 
-    @Element(name="hour")
+    @Element(name="hour", required=false)
     private int hour;
 
-    @Element(name="minute")
+    @Element(name="minute", required=false)
     private int minute;
 
     private Calendar calendar;
 
     public DateTime(@Attribute(name="name") String name, @Attribute(name="zone") String zone,
-            @Attribute(name="UTCOffset") int utcOffset, @Element(name="year") int year,
-            @Element(name="month") int month, @Element(name="day") int day,
-            @Element(name="hour") int hour, @Element(name="minute") int minute) {
+            @Element(name="year") int year, @Element(name="month") int month,
+            @Element(name="day") int day, @Element(name="hour") int hour,
+            @Element(name="minute") int minute) {
         this.name = name;
         this.zone = zone;
-        this.utcOffset = utcOffset;
         this.year = year;
         this.month = month;
         this.day = day;
         this.hour = hour;
         this.minute = minute;
+
         calendar = new GregorianCalendar();
-        calendar.set(this.year, this.month, this.day, this.hour, this.minute, 0);
-        calendar.set(Calendar.ZONE_OFFSET, this.utcOffset);
+        calendar.set(this.year, this.month - 1, this.day, this.hour, this.minute, 0);
+    }
+
+    public DateTime(@Attribute(name="name") String name, @Attribute(name="zone") String zone) {
+        this.name = name;
+        this.zone = zone;
+
+        calendar = new GregorianCalendar();
     }
 
     public String getName() {

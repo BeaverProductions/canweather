@@ -9,13 +9,26 @@ public class EnvCanLongitude extends Longitude {
     }
 
     private static Direction parseDirection(String xmlValue) {
-        // TODO Auto-generated method stub
-        return null;
+        if (xmlValue.length() < 1) {
+            return Direction.NOWHERE;
+        }
+        String directionPart = xmlValue.substring(xmlValue.length()-1);
+        if (directionPart.equals(Direction.EAST.getValue())) {
+            return Direction.EAST;
+        }
+        if (directionPart.equals(Direction.WEST.getValue())) {
+            return Direction.WEST;
+        }
+        throw new IllegalArgumentException("Not a valid longitude direction: " + directionPart);
     }
 
-    private static Double parseDegrees(String xmlValue) {
-        // TODO Auto-generated method stub
-        return null;
+    private static double parseDegrees(String xmlValue) {
+        if (xmlValue.length() < 2) {
+            // It's a hack, this place will now never be found by coord search (too far away)
+            return Double.MAX_VALUE;
+        }
+        String degreesPart = xmlValue.substring(0, xmlValue.length()-2);
+        return Double.parseDouble(degreesPart);
     }
 
 }

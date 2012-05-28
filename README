@@ -1,9 +1,38 @@
-Haven't you always wanted to get your weather data from Environment Canada,
-instead of some of the other options out there?  Well, now you can!
+Haven't you always wanted to get your weather data from Environment
+Canada, instead of some of the other options out there?  Well, now
+you can!
 
 To build:
 
-mvn package
+mvn clean package
 
-Note that this is just a library, not an application.
+Note that this is just a library, not an application.  We use OneJar
+plugin so the resulting jar (find it in target/ directory) includes
+all dependencies.
 
+Suggested entry point:
+
+WeatherHelper weatherSource = WeatherHelperFactory.getWeatherHelper();
+
+From this class, you can get a list of Place objects representing the
+possible unique locations to get weather from.  You can pass one of
+these Place objects back in to get the WeatherData for that Place.
+You can also ask for the WeatherData for the closest Place given a
+pair of coordinates.
+
+Example:
+
+        WeatherHelper weatherSource = WeatherHelperFactory.getWeatherHelper();
+        List<Place> places = weatherSource.getPlaces();
+        for (Place place : places) {
+            System.out.println(place.getName());
+            WeatherData weather = weatherSource.getWeather(place);
+            System.out.println("Current Temp: " + weather.getCurrentTemp());
+            System.out.println("Current Conditions: " + weather.getCurrentConditions());
+            System.out.println("High: " + weather.getTodayHigh());
+            System.out.println("Low: " + weather.getTodayLow());
+            System.out.println("Upcoming Conditions: " + weather.getUpcomingConditions());
+        }
+
+Note that the above program will take quite a while to run, and use a
+nontrivial amount of data.

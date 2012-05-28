@@ -13,10 +13,12 @@ public class Longitude extends CoordinateComponent {
             break;
         case WEST:
             break;
+        case NOWHERE:
+            break;
         case NORTH:
         case SOUTH:
         default:
-            throw new IllegalStateException("Longitude may only be East/West.");
+            throw new IllegalArgumentException("Longitude may only be East/West.");
         }
     }
 

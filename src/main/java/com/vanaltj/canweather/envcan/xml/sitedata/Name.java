@@ -1,4 +1,4 @@
-package com.vanaltj.canweather.envcan.xml;
+package com.vanaltj.canweather.envcan.xml.sitedata;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;

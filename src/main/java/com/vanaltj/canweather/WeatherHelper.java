@@ -6,11 +6,11 @@ import com.vanaltj.canweather.data.Place;
 import com.vanaltj.canweather.data.WeatherData;
 import com.vanaltj.canweather.data.location.Coordinates;
 
-public interface WeatherDataWarehouse {
+public interface WeatherHelper {
 
-    public List<Place> getWeatherLocations();
+    public List<Place> getPlaces();
 
-    public WeatherData getWeather(Place location);
+    public WeatherData getWeather(Place place);
 
     public WeatherData getClosestWeather(Coordinates point);
 

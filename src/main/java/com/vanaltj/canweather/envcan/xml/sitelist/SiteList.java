@@ -1,4 +1,4 @@
-package com.vanaltj.canweather.envcan.xml;
+package com.vanaltj.canweather.envcan.xml.sitelist;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+
 
 @Root
 public class SiteList {

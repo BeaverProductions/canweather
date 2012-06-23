@@ -25,6 +25,8 @@ import com.vanaltj.canweather.envcan.xml.sitelist.SiteList;
 
 public class XMLWrapper {
 
+    private boolean debug;
+
     public class XMLCreationException extends RuntimeException {
         private static final long serialVersionUID = -1773659271289392073L;
 
@@ -44,7 +46,8 @@ public class XMLWrapper {
     private static final String SITES_URL = XML_URL_BASE + "siteList.xml";
     private List<Place> places;
 
-    public XMLWrapper() {
+    public XMLWrapper(boolean debug) {
+        this.debug = debug;
         Serializer serializer = new Persister(getDecodeStrategy());
         URL siteURL;
         try {
@@ -52,6 +55,10 @@ public class XMLWrapper {
             sites = serializer.read(SiteList.class, siteURL.openStream());
         } catch (Exception ex) {
             throw new XMLCreationException("Could not read or deserialize site list from: " + SITES_URL, ex);
+        }
+        if (this.debug) {
+            tempMakePlaces();
+            return;
         }
         makePlaces();
     }
@@ -99,7 +106,7 @@ public class XMLWrapper {
         try {
             // TODO this is faked/hardcoded.  Make it real.
             Site tSite  = new Site("s0000458", "Toronto", "Toronto", "ON");
-            Place toronto = new EnvCanPlace(tSite, getCoords(tSite));
+            Place toronto = new EnvCanPlace(tSite);
             places = new ArrayList<Place>();
             places.add(toronto);
         } catch (Exception e) {
@@ -110,18 +117,21 @@ public class XMLWrapper {
     private void makePlaces() {
         places = new ArrayList<Place>();
         for (Site site : sites.getSites()) {
-            Coordinates coords;
             try {
-                coords = getCoords(site);
-                places.add(new EnvCanPlace(site, coords));
+                places.add(new EnvCanPlace(site));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private Coordinates getCoords(Site site) throws Exception {
-        SiteData data = getSiteData(site);
+    public Coordinates getCoords(Site site) {
+        SiteData data = null;
+        try {
+            data = getSiteData(site);
+        } catch (Exception e) {
+            return null;
+        }
         Name name  = data.getLocation().getName();
         return new Coordinates(new EnvCanLatitude(name.getLatitude()),
                 new EnvCanLongitude(name.getLongitude()));

@@ -9,16 +9,30 @@ import com.vanaltj.canweather.data.location.Coordinates;
 
 public class EnvironmentCanadaWeather implements WeatherHelper {
     private Place toronto;
+    private boolean debug;
 
     private static WeatherHelper INSTANCE;
+    private static WeatherHelper DEBUG_INSTANCE;
 
     private XMLWrapper source;
 
     private EnvironmentCanadaWeather() {
-        source = new XMLWrapper();
+        this(false);
     }
 
-    public static WeatherHelper getInstance() {
+    private EnvironmentCanadaWeather(boolean debug) {
+        this.debug = debug;
+        source = new XMLWrapper(debug);
+    }
+
+    public static WeatherHelper getInstance(boolean debug) {
+        if (debug) {
+            if (DEBUG_INSTANCE == null) {
+                DEBUG_INSTANCE = new EnvironmentCanadaWeather(true);
+            }
+            return DEBUG_INSTANCE;
+        }
+ 
         if (INSTANCE == null) {
             INSTANCE = new EnvironmentCanadaWeather();
         }
@@ -35,6 +49,15 @@ public class EnvironmentCanadaWeather implements WeatherHelper {
     }
 
     public WeatherData getClosestWeather(Coordinates point) {
-        return getWeather(toronto);
+        if (debug) {
+            return getWeather(toronto);
+        }
+        return getWeather(getClosestPlace(point));
+    }
+
+    private Place getClosestPlace(Coordinates point) {
+        throw new RuntimeException("Not implemented yet.\n" +
+                "Please use WeatherHelperFactory.getWeatherHelper(true) to get debug-mode helper.\n" +
+                "It will always return Toronto weather.");
     }
 }

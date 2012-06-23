@@ -8,7 +8,7 @@ public class WeatherHelperFactory {
         // Do not instantiate
     }
 
-    public static WeatherHelper getWeatherHelper() {
-        return EnvironmentCanadaWeather.getInstance();
+    public static WeatherHelper getWeatherHelper(boolean debug) {
+        return EnvironmentCanadaWeather.getInstance(debug);
     }
 }

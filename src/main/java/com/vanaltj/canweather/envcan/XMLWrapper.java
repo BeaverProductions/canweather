@@ -2,15 +2,17 @@ package com.vanaltj.canweather.envcan;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.Strategy;
 import org.simpleframework.xml.strategy.TreeStrategy;
 
-import com.vanaltj.canweather.data.Place;
 import com.vanaltj.canweather.data.WeatherData;
 import com.vanaltj.canweather.data.location.Coordinates;
 import com.vanaltj.canweather.envcan.data.location.EnvCanLatitude;
@@ -25,8 +27,6 @@ import com.vanaltj.canweather.envcan.xml.sitelist.SiteList;
 
 public class XMLWrapper {
 
-    private boolean debug;
-
     public class XMLCreationException extends RuntimeException {
         private static final long serialVersionUID = -1773659271289392073L;
 
@@ -40,11 +40,13 @@ public class XMLWrapper {
         
     }
 
+    private boolean debug;
+    private boolean coordinateSearchReady = false;
     private SiteList sites;
 
     private static final String XML_URL_BASE = "http://dd.weatheroffice.ec.gc.ca/citypage_weather/xml/";
     private static final String SITES_URL = XML_URL_BASE + "siteList.xml";
-    private List<Place> places;
+    private Map<EnvCanPlace, Coordinates> places;
 
     public XMLWrapper(boolean debug) {
         this.debug = debug;
@@ -63,8 +65,8 @@ public class XMLWrapper {
         makePlaces();
     }
 
-    public List<Place> getPlaces() {
-        return places;
+    public Set<?> getPlaces() {
+        return places.keySet();
     }
 
     public WeatherData getWeatherData(EnvCanPlace place) {
@@ -102,30 +104,52 @@ public class XMLWrapper {
         return result;
     }
 
+    public void prepareForCoordinateSearch() {
+        Iterator<EnvCanPlace> placeIterator = ((Set<EnvCanPlace>)places.keySet()).iterator();
+        while (placeIterator.hasNext()) {
+            EnvCanPlace place = placeIterator.next();
+            places.put(place, getCoordinates(place.getSite()));
+        }
+        coordinateSearchReady = true;
+    }
+
+    public WeatherData getClosestWeatherData(Coordinates point) {
+        if (!coordinateSearchReady) {
+            throw new IllegalStateException("Must prepareForCoordinateSearch() first!");
+        }
+        return getWeatherData(getClosestPlace(point));
+    }
+
+    private EnvCanPlace getClosestPlace(Coordinates point) {
+        throw new RuntimeException("Not implemented yet.\n" +
+                "Please use WeatherHelperFactory.getWeatherHelper(true) to get debug-mode helper.\n" +
+                "It will always return Toronto weather.");
+    }
+
+    // Used only for debug mode.
     private void tempMakePlaces() {
         try {
-            // TODO this is faked/hardcoded.  Make it real.
             Site tSite  = new Site("s0000458", "Toronto", "Toronto", "ON");
-            Place toronto = new EnvCanPlace(tSite);
-            places = new ArrayList<Place>();
-            places.add(toronto);
+            EnvCanPlace toronto = new EnvCanPlace(tSite);
+            places = new HashMap<EnvCanPlace, Coordinates>();
+            places.put(toronto, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void makePlaces() {
-        places = new ArrayList<Place>();
+        places = new HashMap<EnvCanPlace, Coordinates>();
         for (Site site : sites.getSites()) {
             try {
-                places.add(new EnvCanPlace(site));
+                places.put(new EnvCanPlace(site), null);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public Coordinates getCoords(Site site) {
+    private Coordinates getCoordinates(Site site) {
         SiteData data = null;
         try {
             data = getSiteData(site);

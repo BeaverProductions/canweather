@@ -1,6 +1,6 @@
 package com.vanaltj.canweather.envcan;
 
-import java.util.List;
+import java.util.Set;
 
 import com.vanaltj.canweather.WeatherHelper;
 import com.vanaltj.canweather.data.Place;
@@ -39,8 +39,9 @@ public class EnvironmentCanadaWeather implements WeatherHelper {
         return INSTANCE;
     }
 
-    public List<Place> getPlaces() {
-        return source.getPlaces();
+    @SuppressWarnings("unchecked")
+    public Set<Place> getPlaces() {
+        return (Set<Place>) source.getPlaces();
     }
 
     public WeatherData getWeather(Place place) {
@@ -52,12 +53,10 @@ public class EnvironmentCanadaWeather implements WeatherHelper {
         if (debug) {
             return getWeather(toronto);
         }
-        return getWeather(getClosestPlace(point));
+        return source.getClosestWeatherData(point);
     }
 
-    private Place getClosestPlace(Coordinates point) {
-        throw new RuntimeException("Not implemented yet.\n" +
-                "Please use WeatherHelperFactory.getWeatherHelper(true) to get debug-mode helper.\n" +
-                "It will always return Toronto weather.");
+    public void prepareCoordinates() {
+        source.prepareForCoordinateSearch();
     }
 }
